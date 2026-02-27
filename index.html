@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSG53 INBOXING | Intelligence Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide { animation: slideIn 0.4s ease forwards; }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .shimmer-bg { position: relative; overflow: hidden; }
+        .shimmer-bg::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#020617] text-slate-200 min-h-screen selection:bg-indigo-500/30 overflow-x-hidden custom-scrollbar">
+
+    <!-- Sidebar -->
+    <aside class="fixed left-0 top-0 h-full w-72 bg-[#0b0f1a] border-r border-slate-800/40 p-8 flex flex-col gap-10 hidden lg:flex z-50">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/20">
+                <i class="fa-solid fa-bolt-lightning text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-xl tracking-tighter text-white leading-none">JSG53</h1>
+                <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-indigo-400">Inboxing</p>
+            </div>
+        </div>
+
+        <nav class="flex flex-col gap-2">
+            <div class="text-[10px] uppercase font-bold text-slate-500 tracking-widest px-4 mb-4">Core Systems</div>
+            <a href="#" class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 transition-all">
+                <i class="fa-solid fa-microchip"></i>
+                <span class="font-bold text-sm tracking-tight">Subject Extractor</span>
+            </a>
+            <a href="#" class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-slate-800/50 text-slate-400 transition-all border border-transparent hover:border-slate-700/50">
+                <i class="fa-solid fa-chart-line"></i>
+                <span class="font-bold text-sm tracking-tight">Deliverability</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto p-6 bg-slate-900/40 rounded-3xl border border-slate-800/40">
+            <p class="text-[10px] text-slate-500 mb-3 uppercase tracking-[0.15em] font-black">Active Nodes</p>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-slate-400">Google API</span>
+                    <span class="text-emerald-500 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        ONLINE
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-slate-400">Accounts</span>
+                    <span class="text-white">7 Loaded</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:ml-72 p-6 md:p-12 max-w-6xl mx-auto">
+        <header class="mb-10">
+            <h2 class="text-4xl font-black text-white tracking-tight mb-2">Subject <span class="text-indigo-500">Intelligence Hub</span></h2>
+            <p class="text-slate-400 text-base font-medium">Extracting last 3 subject lines across 7 master accounts.</p>
+        </header>
+<!-- BOTTOM: Commonality Detection -->
+            <section id="common-section" class="hidden w-full pb-16">
+                <div class="bg-gradient-to-r from-[#0b0f1a] to-[#0f1425] border-t-2 border-indigo-500/60 rounded-[2.5rem] p-8 shadow-2xl flex flex-col md:flex-row items-center gap-10">
+                    <div class="flex-grow w-full">
+                        <label class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4 block">IDENTIFIED COMMON SUBJECT</label>
+                        <div class="relative group">
+                            <input id="common-subject-input" readonly
+                                class="w-full bg-[#020617] border border-indigo-500/20 rounded-2xl py-5 px-6 text-white font-bold text-lg focus:outline-none transition-all group-hover:border-indigo-500/40"
+                                placeholder="Analyzing data convergence...">
+                            <button id="copy-btn" 
+                                class="absolute right-3 top-1/2 -translate-y-1/2 p-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all active:scale-90 shadow-lg shadow-indigo-600/30">
+                                <i class="fa-solid fa-copy text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-48 flex flex-col items-center justify-center p-6 bg-indigo-500/5 rounded-3xl border border-indigo-500/10 min-h-[120px]">
+                        <span class="text-[10px] text-indigo-300 font-black mb-1 uppercase tracking-tighter">Match Percent</span>
+                        <span id="match-percent" class="text-4xl font-black text-indigo-400 italic">0%</span>
+                    </div>
+                </div>
+            </section>
+        <div class="flex flex-col gap-8">
+            <!-- TOP: Target Entry -->
+            <section class="w-full">
+                <div class="bg-[#0b0f1a] border border-slate-800/60 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+                    <div class="flex flex-col lg:flex-row gap-8 items-start relative z-10">
+                        <div class="flex-grow w-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <label class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Target Domains</label>
+                                <span class="text-[10px] bg-slate-800 text-slate-400 px-3 py-1 rounded-full font-bold">MULTIPLE INPUT ENABLED</span>
+                            </div>
+                            <textarea id="domain-input" 
+                                class="w-full h-36 bg-[#020617] border border-slate-800/80 rounded-2xl p-6 text-slate-200 placeholder:text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/40 transition-all resize-none text-sm font-mono leading-relaxed"
+                                placeholder="example-sender.com&#10;delivery-node.net"></textarea>
+                        </div>
+                        <div class="w-full lg:w-72 lg:pt-8 flex flex-col gap-3">
+                            <button id="sync-btn" 
+                                class="group w-full py-5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all shadow-xl shadow-indigo-600/20 active:scale-[0.97]">
+                                <i class="fa-solid fa-bolt-lightning group-hover:rotate-12 transition-transform"></i>
+                                <span class="tracking-widest uppercase">Sync Network</span>
+                            </button>
+                            <button id="clear-btn" class="hidden w-full py-3 text-slate-500 hover:text-red-400 text-[10px] font-black transition-colors uppercase tracking-widest">
+                                <i class="fa-solid fa-trash-can mr-2"></i> Clear Workspace
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MIDDLE: Feed -->
+            <section class="w-full">
+                <div class="bg-[#0b0f1a] border border-slate-800/60 rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[450px] flex flex-col">
+                    <div class="px-8 py-6 border-b border-slate-800/60 flex items-center justify-between bg-slate-900/20">
+                        <h3 class="text-base font-black text-white flex items-center gap-3 tracking-tight">
+                            DATA EXTRACTION FEED
+                            <div id="scan-progress" class="hidden h-1 w-32 bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-indigo-500 animate-[loading_2s_infinite]"></div>
+                            </div>
+                        </h3>
+                    </div>
+
+                    <div id="empty-state" class="flex-grow flex flex-col items-center justify-center py-24 text-center">
+                        <div class="w-20 h-20 bg-indigo-500/5 rounded-full flex items-center justify-center mb-6 border border-indigo-500/10">
+                            <i class="fa-solid fa-server text-3xl text-indigo-500/30"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-400 mb-1">Awaiting Domain Sequence</h4>
+                        <p class="text-xs text-slate-600 font-bold uppercase tracking-widest">Input target to initiate sync</p>
+                    </div>
+
+                    <div id="results-table-container" class="hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-slate-500 text-[10px] uppercase tracking-[0.2em] font-black border-b border-slate-800/60">
+                                        <th class="px-8 py-6">Identity</th>
+                                        <th class="px-8 py-6">Domain</th>
+                                        <th class="px-8 py-6">Inbox Subjects (Last 3)</th>
+                                        <th class="px-8 py-6 text-right">Verification</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-body" class="divide-y divide-slate-800/40">
+                                    <!-- Rows injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+        </div>
+    </main>
+
+    <script>
+        const CONFIG = {
+            clientId: "998810876365-jktr21ut1ojev3vh30r0bdt9vfbtooc4.apps.googleusercontent.com",
+            clientSecret: "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",
+            accounts: [
+                { name: "agkartik8429", token: "1//0gUpKubzJ8zLACgYIARAAGBASNwF-L9Ir98FQQ9IT0lWClFYvaf7dNN3E2lwmnMtU68JNOuNLp1FxLvK0vaNYBJhhy9HTJBuJ4QY" },
+                { name: "musk9090", token: "1//0gQ2C943iP0o4CgYIARAAGBASNwF-L9Iry_2_Q5ZoZjIlGcNvVPD722dae2qk96-abMGm8_BFt_FFe-fLCNQ6ohg9MJpI2Qcw1ps" },
+                { name: "agkar9090", token: "1//0gvK6lfiJ4PJlCgYIARAAGBASNwF-L9IrSZXag-y1al0akpJh-0QqXThO9XM3mDUQWnoAfm7vrmQoxjZZWZbhOCSDRxF6pSGv-IU" },
+                { name: "liveseedforall", token: "1//0gsECEBPoJTeeCgYIARAAGBASNwF-L9IrxspOyxB7_XiNqIAirWvsHD4snc9ZBNtXbpEkJ5msFYrmo_cU7RFrk9jHGNFeiBcFS8w" },
+                { name: "liveseedacc", token: "1//0gZXsZmvCqRuoCgYIARAAGBASNwF-L9IruUjattspTfQPM1xQyX737Q8LtZ9bY9Qw5nuhad6G1u9zoF3cPtOeY7KOIEQvwwOPDpY" },
+                { name: "markanthony", token: "1//0gglaqRGdjH1PCgYIARAAGBASNwF-L9IrhjWA3D6Lyj8VXegWfxmLPfUDeHpC77KYkHptzw0WeLE-9K0ueUF4sVt7OjTHx2EpL1E" },
+                { name: "liveseedmm", token: "1//0ghQppVnVC-PzCgYIARAAGBASNwF-L9IruKKgP7oS-i0XRt0qwalFv2plievO_V6ru38ojyuSpWu70U-3cSUTH_6IUOi8FPOzpow" },
+                { name: "arcsan", token: "1//0g1Wz24gLsxXtCgYIARAAGBASNwF-L9Ir9KkoFXnZYRZTC37XvSIUXg0Drut3NXjW_B0qDmd1hiItUvZx1HoYAS6i-VXwo0C2bvc" },
+                { name: "ashwinsiropn", token: "1//0gR6hjmADZ8D3CgYIARAAGBASNwF-L9IrQeS7pFGw5xEn5X1IUNEL2yUGB3FeK8VApz40-9BD0AIBsq4ZK5APQ5BLpczx5o2ZsY0" },
+                { name: "53nonopn", token: "1//0g_7GPEpxZdH5CgYIARAAGBASNwF-L9Ir0fAFdu1CjWxtDZdQPao96Y2bYtrL9BAYOhRUQjjdBZrSGCXTz_9ez7WZvFu--f3Z8ss" },
+                { name: "rocky53", token: "1//0gr91w0s_NlgQCgYIARAAGBASNwF-L9Irxsv83ewshNImeetiHonMR-BS5eP1E0nzWAJeSQvzFohPBpCyUaRQs3YjS8uSnajZ4X4" }
+               
+            ]
+        };
+
+        const dom = {
+            input: document.getElementById('domain-input'),
+            sync: document.getElementById('sync-btn'),
+            clear: document.getElementById('clear-btn'),
+            table: document.getElementById('results-table-container'),
+            body: document.getElementById('results-body'),
+            empty: document.getElementById('empty-state'),
+            progress: document.getElementById('scan-progress'),
+            commonSec: document.getElementById('common-section'),
+            commonInput: document.getElementById('common-subject-input'),
+            copy: document.getElementById('copy-btn'),
+            percent: document.getElementById('match-percent')
+        };
+
+        let lastResults = [];
+
+        async function getAccess(refreshToken) {
+            const res = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    client_id: CONFIG.clientId,
+                    client_secret: CONFIG.clientSecret,
+                    refresh_token: refreshToken,
+                    grant_type: 'refresh_token',
+                }),
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            return data.access_token;
+        }
+
+        async function fetchSubjects(accessToken, domain) {
+            try {
+                const q = encodeURIComponent(`${domain} in:inbox`);
+                const listRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=3`, {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                const listData = await listRes.json();
+
+                if (!listData.messages || listData.messages.length === 0) return [];
+
+                return await Promise.all(listData.messages.map(async (m) => {
+                    const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}`, {
+                        headers: { Authorization: `Bearer ${accessToken}` }
+                    });
+                    const msgData = await msgRes.json();
+                    const headers = msgData.payload.headers;
+                    const subject = headers.find(h => h.name === 'Subject')?.value || "(Empty Subject)";
+                    const dateRaw = headers.find(h => h.name === 'Date')?.value || "";
+                    const dateObj = new Date(dateRaw);
+                    const date = isNaN(dateObj) ? "" : dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    
+                    return { subject, date };
+                }));
+            } catch (e) { return null; }
+        }
+
+        function calculateCommonality(results) {
+            if (results.length === 0) return;
+
+            const accountMaps = results.reduce((acc, curr) => {
+                if (!acc[curr.accName]) acc[curr.accName] = new Set();
+                curr.subjects.forEach(s => acc[curr.accName].add(s.subject));
+                return acc;
+            }, {});
+
+            const accountNames = Object.keys(accountMaps);
+            const totalAccounts = CONFIG.accounts.length;
+
+            if (accountNames.length < totalAccounts) {
+                dom.percent.textContent = "...";
+                dom.commonInput.value = "Finalizing account analysis...";
+                return;
+            }
+
+            const allSubjectsAcrossAccounts = [].concat(...Object.values(accountMaps).map(set => Array.from(set)));
+            const frequency = {};
+            allSubjectsAcrossAccounts.forEach(s => frequency[s] = (frequency[s] || 0) + 1);
+
+            let topSubject = "";
+            let topCount = 0;
+            for (const [subj, count] of Object.entries(frequency)) {
+                if (count > topCount) {
+                    topCount = count;
+                    topSubject = subj;
+                }
+            }
+
+            const matchRate = Math.round((topCount / totalAccounts) * 100);
+            dom.percent.textContent = `${matchRate}%`;
+            
+            if (topCount === totalAccounts) {
+                dom.commonInput.value = topSubject;
+                dom.percent.className = "text-4xl font-black text-emerald-400 italic";
+            } else if (topCount > 1) {
+                dom.commonInput.value = `Partial Match Found: "${topSubject}"`;
+                dom.percent.className = "text-4xl font-black text-indigo-400 italic";
+            } else {
+                dom.commonInput.value = "No shared subject lines found across the network.";
+                dom.percent.textContent = "0%";
+            }
+        }
+
+        function renderRow(accName, domain, subjects) {
+            const row = document.createElement('tr');
+            row.className = "hover:bg-indigo-500/[0.03] transition-colors group animate-slide";
+            
+            const hasData = subjects && subjects.length > 0;
+            const statusHtml = hasData 
+                ? `<div class="flex items-center gap-1.5 justify-end text-[9px] font-black text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">VERIFIED INBOX</div>`
+                : subjects === null 
+                ? `<div class="flex items-center gap-1.5 justify-end text-[9px] font-black text-red-400 bg-red-400/10 px-3 py-1.5 rounded-full border border-red-400/20 text-center">AUTH EXPIRED</div>`
+                : `<div class="flex items-center gap-1.5 justify-end text-[9px] font-black text-slate-500 bg-slate-800 px-3 py-1.5 rounded-full">NO MATCH</div>`;
+
+            let subjectsHtml = subjects === null 
+                ? `<span class="text-red-400/80 text-xs font-bold">Please update token for ${accName}</span>`
+                : subjects.length === 0 
+                ? `<span class="text-slate-700 text-xs italic font-medium">Domain not detected in Inbox</span>`
+                : subjects.map((s, i) => `
+                    <div class="flex items-center justify-between gap-3 mb-1.5 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60 text-xs hover:border-indigo-500/30 transition-all">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <span class="w-4 h-4 flex-shrink-0 flex items-center justify-center text-[8px] font-black bg-slate-800 text-slate-500 rounded-md">${i+1}</span>
+                            <span class="text-slate-100 font-bold truncate max-w-[240px]">${s.subject}</span>
+                        </div>
+                        <span class="text-[9px] font-bold text-slate-500 flex-shrink-0 italic">${s.date}</span>
+                    </div>
+                `).join('');
+
+            row.innerHTML = `
+                <td class="px-8 py-5"><span class="text-slate-200 font-black text-sm tracking-tight">${accName}</span></td>
+                <td class="px-8 py-5"><span class="text-indigo-400/70 font-mono text-[10px] font-black">${domain}</span></td>
+                <td class="px-8 py-5">${subjectsHtml}</td>
+                <td class="px-8 py-5 text-right">${statusHtml}</td>
+            `;
+            dom.body.appendChild(row);
+        }
+
+        dom.sync.addEventListener('click', async () => {
+            const domains = dom.input.value.split('\n').filter(d => d.trim() !== '');
+            if (domains.length === 0) return;
+
+            dom.sync.disabled = true;
+            dom.sync.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i><span class="tracking-widest">PROBING DATA...</span>`;
+            dom.empty.classList.add('hidden');
+            dom.table.classList.remove('hidden');
+            dom.clear.classList.remove('hidden');
+            dom.commonSec.classList.remove('hidden');
+            dom.body.innerHTML = '';
+            lastResults = [];
+
+            for (const domain of domains) {
+                const trimmed = domain.trim();
+                
+                await Promise.all(CONFIG.accounts.map(async (acc) => {
+                    try {
+                        const token = await getAccess(acc.token);
+                        const subjects = await fetchSubjects(token, trimmed);
+                        renderRow(acc.name, trimmed, subjects);
+                        if (subjects && subjects.length > 0) {
+                            lastResults.push({ accName: acc.name, subjects });
+                        }
+                    } catch (e) {
+                        renderRow(acc.name, trimmed, null);
+                    }
+                }));
+            }
+
+            calculateCommonality(lastResults);
+            dom.sync.disabled = false;
+            dom.sync.innerHTML = `<i class="fa-solid fa-bolt-lightning"></i><span class="tracking-widest uppercase">Sync Network</span>`;
+        });
+
+        dom.copy.addEventListener('click', () => {
+            const val = dom.commonInput.value;
+            if (val && !val.includes('No shared') && !val.includes('Analyzing')) {
+                const el = document.createElement("textarea");
+                el.value = val;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand("copy");
+                document.body.removeChild(el);
+                
+                const originalIcon = dom.copy.innerHTML;
+                dom.copy.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                dom.copy.className = dom.copy.className.replace('bg-indigo-600', 'bg-emerald-600');
+                setTimeout(() => {
+                    dom.copy.innerHTML = originalIcon;
+                    dom.copy.className = dom.copy.className.replace('bg-emerald-600', 'bg-indigo-600');
+                }, 2000);
+            }
+        });
+
+        dom.clear.addEventListener('click', () => {
+            dom.body.innerHTML = '';
+            dom.table.classList.add('hidden');
+            dom.empty.classList.remove('hidden');
+            dom.clear.classList.add('hidden');
+            dom.commonSec.classList.add('hidden');
+            dom.input.value = '';
+            lastResults = [];
+        });
+    </script>
+</body>
+</html>
