@@ -1,530 +1,384 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSG44 INBOXING | Kasukabe Intelligence Hub</title>
+    <title>Deliverability & Subject Line Analyzer</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                },
+            },
+        };
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #0b0d1e;
-        }
-
-        .manga-title {
-            font-family: 'Fredoka', sans-serif;
-        }
-
         .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
+            height: 6px;
         }
-
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0b0d1e;
+            background: #f1f5f9;
         }
-
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #fce300;
-            border: 2px solid #0b0d1e;
-            border-radius: 10px;
+            background: #cbd5e1;
+            border-radius: 4px;
         }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
-
-        .animate-slide {
-            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        .shimmer-bg {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .shimmer-bg::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background: linear-gradient(90deg, transparent, rgba(252, 227, 0, 0.15), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        /* Chocobi Cookie Falling System */
-        #chocobi-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .star-cookie {
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            pointer-events: none;
-            opacity: 0.55;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-20px) rotate(0deg) scale(0.7);
-                opacity: 0;
-            }
-            15% {
-                opacity: 0.65;
-            }
-            85% {
-                opacity: 0.65;
-            }
-            100% {
-                transform: translateY(105vh) rotate(360deg) scale(1.1);
-                opacity: 0;
-            }
-        }
-
-        @keyframes sway {
-            0%, 100% {
-                margin-left: 0px;
-            }
-            50% {
-                margin-left: 35px;
-            }
-        }
-
-        /* Thick Comic Pop Shadows */
-        .comic-shadow-red {
-            box-shadow: 4px 4px 0px 0px #e52521;
-        }
-
-        .comic-shadow-yellow {
-            box-shadow: 4px 4px 0px 0px #fce300;
-        }
-
-        .comic-shadow-blue {
-            box-shadow: 4px 4px 0px 0px #0069b4;
-        }
-
-        /* Little Speech Bubble Animation */
-        @keyframes floatBubble {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-4px) scale(1.02); }
-        }
-        .speech-bubble {
-            animation: floatBubble 3s ease-in-out infinite;
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
         }
     </style>
 </head>
+<body class="h-full text-slate-800 bg-slate-50 flex flex-col font-sans selection:bg-slate-200">
 
-<body class="text-slate-100 min-h-screen selection:bg-yellow-400/40 overflow-x-hidden custom-scrollbar relative">
-
-    <!-- Chocobi Background Container -->
-    <div id="chocobi-container"></div>
-
-    <!-- Sidebar -->
-    <aside
-        class="fixed left-0 top-0 h-full w-72 bg-[#12152b] border-r-4 border-yellow-400 p-8 flex flex-col gap-10 hidden lg:flex z-50">
-        <div class="flex items-center gap-4">
-            <!-- Chocobi Pink Mascot Style Icon Box -->
-            <div
-                class="w-12 h-12 bg-gradient-to-br from-[#e52521] to-[#f5514e] border-2 border-white rounded-2xl flex items-center justify-center shadow-lg comic-shadow-yellow">
-                <i class="fa-solid fa-star text-yellow-300 text-xl animate-spin-slow"></i>
-            </div>
-            <div>
-                <h1 class="font-extrabold text-2xl tracking-tighter text-yellow-300 leading-none manga-title">JSG53</h1>
-                <p class="text-[10px] uppercase tracking-[0.25em] font-black text-[#ff6b6b]">Shin-chan Inbox</p>
-            </div>
-        </div>
-
-        <nav class="flex flex-col gap-3">
-            <div class="text-[10px] uppercase font-black text-rose-400/60 tracking-widest px-4 mb-2">Defense Systems</div>
-            <a href="#"
-                class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-red-600 to-[#e52521] text-white border-2 border-black font-extrabold text-sm tracking-tight transition-all comic-shadow-yellow hover:translate-x-1">
-                <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i>
-                <span>Subject Extractor</span>
-            </a>
-            <a href="#"
-                class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-[#191e3e] text-slate-300 border border-slate-800/80 font-bold text-sm tracking-tight transition-all hover:bg-[#20264e] hover:border-yellow-400/40">
-                <i class="fa-solid fa-shield-halved text-emerald-400"></i>
-                <span>Deliverability</span>
-            </a>
-        </nav>
-
-        <div class="mt-auto p-6 bg-[#181d3c] rounded-3xl border-2 border-[#0069b4] shadow-sm">
-            <p class="text-[10px] text-yellow-400/80 mb-3 uppercase tracking-[0.15em] font-black flex items-center gap-2">
-                <i class="fa-solid fa-circle text-[8px] text-emerald-400 animate-pulse"></i>
-                Kasukabe Defense Node
-            </p>
-            <div class="space-y-2 text-xs font-bold">
-                <div class="flex items-center justify-between">
-                    <span class="text-slate-400">Google API</span>
-                    <span class="text-[#39ff14]">ONLINE</span>
+    <div class="min-h-full flex flex-col lg:flex-row">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full lg:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800">
+            <div class="p-4 sm:p-6">
+                <!-- App Logo & Branding -->
+                <div class="flex items-center gap-3 mb-6 lg:mb-8">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-900/50">
+                        <i class="fa-solid fa-square-poll-vertical"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-white text-base leading-tight tracking-tight">Deliverability</h1>
+                        <p class="text-[11px] text-slate-400 font-medium">Subject & Folder Monitor</p>
+                    </div>
                 </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-slate-400">Shin-chan Crew</span>
-                    <span class="text-yellow-300">12 Loaded</span>
+
+                <!-- Navigation Tabs/Links -->
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-400 font-semibold text-sm border border-indigo-500/20">
+                        <i class="fa-solid fa-chart-line w-4 text-center"></i>
+                        <span>Subject Line Scanner</span>
+                    </a>
+                    <a href="#common-section" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-bullseye w-4 text-center"></i>
+                        <span>Match Metrics</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Active Nodes Status Widget -->
+            <div class="p-4 m-4 bg-slate-800/70 rounded-xl border border-slate-700/60 text-xs hidden lg:block">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-bold">API Connection</span>
+                    <span class="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Ready
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-slate-300">
+                    <span class="text-slate-400">Master Nodes</span>
+                    <span id="sidebar-accounts-count" class="font-mono bg-slate-700 px-2 py-0.5 rounded text-white font-semibold">12 Active</span>
                 </div>
             </div>
-        </div>
-    </aside>
+        </aside>
 
-    <!-- Main Content -->
-    <main class="lg:ml-72 p-6 md:p-12 max-w-6xl mx-auto relative z-10 min-h-screen flex flex-col justify-between">
-        
-        <!-- Workspace Area -->
-        <div class="w-full">
-            <header class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 class="text-4xl font-extrabold text-white tracking-tight mb-2 manga-title">Subject <span
-                            class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-red-500">Intelligence Hub</span></h2>
-                    <p class="text-slate-400 text-sm font-medium">Extracting last 3 subject lines across 12 master Shin-chan accounts.</p>
-                </div>
-                <!-- Action Kamen Badge -->
-                <div class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-500/10 border-2 border-emerald-400/30 text-emerald-300 text-xs font-black shadow-md">
-                    <i class="fa-solid fa-mask text-[#39ff14] animate-bounce"></i>
-                    <span>ACTION KAMEN MODE ENABLED</span>
+        <!-- Main Content Workspace -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto w-full">
+            <!-- Header Banner -->
+            <header class="mb-6 sm:mb-8 border-b border-slate-200 pb-5 sm:pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">Subject Line & Delivery Monitor</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Scan last 3 subjects across <span id="header-accounts-count" class="font-semibold text-slate-700">12</span> accounts with precise delivery timestamps in seconds.</p>
+                    </div>
+                    <div id="active-mode-badge" class="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-slate-500"></span> Idle / Ready
+                    </div>
                 </div>
             </header>
 
-            <!-- COMMON SECTION (Commonality Detection) -->
-            <section id="common-section" class="hidden w-full pb-10">
-                <div
-                    class="bg-[#121633] border-4 border-[#e52521] rounded-[2.5rem] p-8 shadow-2xl flex flex-col md:flex-row items-center gap-10">
-                    <div class="flex-grow w-full">
-                        <label
-                            class="text-xs font-black text-yellow-400 uppercase tracking-widest mb-4 block">IDENTIFIED
-                            COMMON SUBJECT</label>
-                        <div class="relative group">
-                            <input id="common-subject-input" readonly
-                                class="w-full bg-[#0a0d24] border-2 border-[#0069b4] rounded-2xl py-5 px-6 text-white font-bold text-lg focus:outline-none transition-all"
-                                placeholder="Analyzing Star Cookie coordinates...">
-                            <button id="copy-btn"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 p-4 bg-[#e52521] hover:bg-red-500 border-2 border-black text-white rounded-xl transition-all active:scale-95 shadow-md">
-                                <i class="fa-solid fa-copy text-lg"></i>
+            <!-- Input & Execution Section -->
+            <section class="mb-6 sm:mb-8">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+                        <!-- Target Domains Textarea -->
+                        <div class="lg:col-span-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="domain-input" class="text-xs font-bold uppercase tracking-wider text-slate-600">
+                                    Target Domains / Sender Email Addresses
+                                </label>
+                                <span class="text-[11px] text-slate-400 font-medium">One per line</span>
+                            </div>
+                            <textarea id="domain-input" 
+                                class="w-full h-28 sm:h-32 bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4 text-slate-800 font-mono text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none"
+                                placeholder="example-sender.com&#10;delivery-node.net"></textarea>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="flex flex-col sm:flex-row lg:flex-col justify-end gap-2.5 sm:gap-3">
+                            <!-- Check Inbox Button -->
+                            <button id="btn-check-inbox" type="button" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2.5">
+                                <i class="fa-solid fa-inbox text-sm sm:text-base"></i>
+                                <span>Check Inbox</span>
+                            </button>
+
+                            <!-- Check Spam Button -->
+                            <button id="btn-check-spam" type="button" class="w-full py-3 px-4 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2.5">
+                                <i class="fa-solid fa-triangle-exclamation text-sm sm:text-base"></i>
+                                <span>Check Spam</span>
+                            </button>
+
+                            <!-- Clear Workspace Button -->
+                            <button id="btn-clear" type="button" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-xl text-xs transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span>Reset Inputs</span>
                             </button>
                         </div>
-                    </div>
-                    <div
-                        class="w-full md:w-48 flex flex-col items-center justify-center p-6 bg-yellow-400/5 rounded-3xl border-2 border-yellow-400/20 min-h-[120px]">
-                        <span class="text-[10px] text-yellow-300/70 font-black mb-1 uppercase tracking-widest">Match
-                            Percent</span>
-                        <span id="match-percent" class="text-4xl font-black text-yellow-400 italic">0%</span>
                     </div>
                 </div>
             </section>
 
-            <div class="flex flex-col gap-8">
-                <!-- TOP: Target Entry -->
-                <section class="w-full">
-                    <div
-                        class="bg-[#12152b] border-4 border-yellow-400 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden comic-shadow-red">
-                        <div class="flex flex-col lg:flex-row gap-8 items-start relative z-10">
-                            <div class="flex-grow w-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <label class="text-xs font-black text-yellow-400 uppercase tracking-[0.2em] manga-title">Target
-                                        Domains</label>
-                                    <span
-                                        class="text-[10px] bg-red-600/20 border border-red-500/30 text-red-300 px-3 py-1 rounded-full font-extrabold">MULTIPLE
-                                        INPUTS ACTIVE</span>
-                                </div>
-                                <textarea id="domain-input"
-                                    class="w-full h-36 bg-[#0a0d20] border-2 border-slate-800/80 rounded-2xl p-6 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-yellow-400 transition-all resize-none text-sm font-mono leading-relaxed"
-                                    placeholder="example-sender.com&#10;delivery-node.net"></textarea>
+            <!-- Commonality & Analytics Panel -->
+            <section id="common-section" class="hidden mb-6 sm:mb-8 animate-fade-in">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-6">
+                    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 sm:gap-6">
+                        <!-- Top Identified Subject Input & Copy -->
+                        <div class="flex-1">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                                Primary Identified Subject Line
+                            </label>
+                            <div class="flex gap-2">
+                                <input id="common-subject-input" readonly
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none truncate"
+                                    placeholder="Scanning accounts for primary subjects...">
+                                <button id="copy-btn" title="Copy Subject Line" type="button"
+                                    class="px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-medium transition-all text-xs sm:text-sm flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
                             </div>
-                            <div class="w-full lg:w-72 lg:pt-8 flex flex-col gap-3">
-                                <button id="sync-btn"
-                                    class="group w-full py-4 bg-gradient-to-r from-red-600 to-[#e52521] hover:from-red-500 hover:to-red-600 border-2 border-black disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all active:scale-[0.97] comic-shadow-yellow">
-                                    <i class="fa-solid fa-bolt-lightning group-hover:rotate-12 transition-transform text-yellow-300"></i>
-                                    <span class="tracking-widest uppercase">SYNC WORKSPACE</span>
-                                </button>
-                                
-                                <!-- Mailbox Target Toggle Button -->
-                                <button id="mailbox-toggle-btn"
-                                    class="w-full py-4 bg-[#0069b4] hover:bg-sky-600 border-2 border-black text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all active:scale-[0.97] comic-shadow-yellow">
-                                    <i class="fa-solid fa-envelope-open text-yellow-300"></i>
-                                    <span class="tracking-widest uppercase">SHOW SPAM MAILS</span>
-                                </button>
+                        </div>
 
-                                <button id="clear-btn"
-                                    class="hidden w-full py-2 text-rose-400 hover:text-red-400 text-xs font-black transition-colors uppercase tracking-widest">
-                                    <i class="fa-solid fa-trash-can mr-2"></i> Clear Kasukabe Deck
-                                </button>
+                        <!-- Match Convergence Rate Metric -->
+                        <div class="w-full md:w-64 bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Top Match Convergence</span>
+                                <span id="match-percent" class="text-base sm:text-lg font-extrabold text-indigo-600 font-mono">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                                <div id="match-bar" class="bg-indigo-600 h-full w-0 transition-all duration-500"></div>
                             </div>
                         </div>
                     </div>
-                </section>
 
-                <!-- MIDDLE: Feed -->
-                <section class="w-full">
-                    <div
-                        class="bg-[#12152b] border-4 border-[#0069b4] rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[450px] flex flex-col comic-shadow-yellow">
-                        <div
-                            class="px-8 py-6 border-b-2 border-[#0069b4] flex items-center justify-between bg-slate-900/40">
-                            <h3 class="text-base font-black text-white flex items-center gap-3 tracking-tight manga-title">
-                                <span id="feed-title-label">KASUKABE DATA FEED (INBOX)</span>
-                                <div id="scan-progress" class="hidden h-2 w-32 bg-[#0a0d20] rounded-full overflow-hidden border border-slate-800">
-                                    <div class="h-full bg-gradient-to-r from-[#e52521] to-yellow-400 animate-[loading_2s_infinite]"></div>
-                                </div>
-                            </h3>
+                    <!-- Inbox Subject Lines Summary & Matching Percentage Table -->
+                    <div id="inbox-subjects-summary-container" class="hidden border-t border-slate-100 pt-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-inbox text-indigo-600"></i> Inbox Subject Lines & Match Distribution
+                            </h4>
+                            <span id="inbox-subjects-count" class="text-[11px] font-mono text-slate-400 font-medium">0 unique subjects</span>
                         </div>
-
-                        <!-- Empty State: Shiro is sleeping -->
-                        <div id="empty-state" class="flex-grow flex flex-col items-center justify-center py-24 text-center">
-                            <div
-                                class="w-24 h-24 bg-yellow-400/5 rounded-full flex items-center justify-center mb-6 border-2 border-yellow-400/20 animate-pulse">
-                                <i class="fa-solid fa-cookie-bite text-4xl text-yellow-400/40"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-yellow-300 mb-1 manga-title">Shiro is Sleeping zZZ...</h4>
-                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest max-w-sm">
-                                Enter your target domains above to wake up Shiro and begin scanning!
-                            </p>
-                        </div>
-
-                        <!-- Results Table Container -->
-                        <div id="results-table-container" class="hidden">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr
-                                            class="text-[#ff6b6b] text-[10px] uppercase tracking-[0.2em] font-black border-b border-slate-800/60">
-                                            <th class="px-8 py-6">Kasukabe Agent</th>
-                                            <th class="px-8 py-6">Target Domain</th>
-                                            <th id="table-subject-header" class="px-8 py-6">Inbox Subject Lines (Last 3)</th>
-                                            <th class="px-8 py-6 text-right">Verification</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="results-body" class="divide-y divide-slate-800/40">
-                                        <!-- Rows injected dynamically -->
-                                    </tbody>
-                                </table>
+                        <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl overflow-hidden">
+                            <div id="inbox-subjects-list" class="divide-y divide-slate-200/70 text-xs">
+                                <!-- Dynamic Inbox Subject Breakdown -->
                             </div>
                         </div>
                     </div>
-                </section>
+
+                    <!-- Email Preview Action Trigger -->
+                    <div id="preview-trigger-container" class="hidden pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-eye text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 id="preview-trigger-title" class="text-sm font-bold text-slate-800">Email Found in Muskan Sharma Account</h4>
+                                <p id="preview-trigger-desc" class="text-xs text-slate-500">View safe sandboxed preview pulled from node <strong class="text-slate-700 font-semibold">musk9090</strong>.</p>
+                            </div>
+                        </div>
+                        <button id="show-preview-btn" type="button" class="w-full sm:w-auto px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold tracking-wide transition-all shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            <span>Show Mail Preview</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Feed Table Card -->
+            <section class="mb-10">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[350px] flex flex-col">
+                    <!-- Feed Table Header -->
+                    <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <h3 class="font-bold text-slate-900 text-xs sm:text-sm tracking-tight uppercase">Account Feed & Subject Analysis</h3>
+                            <div id="scan-progress" class="hidden flex items-center gap-2 text-xs text-indigo-600 font-medium">
+                                <i class="fa-solid fa-circle-notch animate-spin"></i> Scanning Node...
+                            </div>
+                        </div>
+                        <div id="feed-status-summary" class="text-[11px] sm:text-xs font-medium text-slate-500">
+                            Awaiting scan initiation
+                        </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="empty-state" class="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 text-center">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
+                            <i class="fa-solid fa-inbox text-xl sm:text-2xl"></i>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-700 mb-1">No Active Scan Data</h4>
+                        <p class="text-xs text-slate-400 max-w-sm">Enter target domains above and click <strong>Check Inbox</strong> or <strong>Check Spam</strong> to inspect subject lines and delivery times.</p>
+                    </div>
+
+                    <!-- Mobile-Optimized Table Container -->
+                    <div id="results-table-container" class="hidden flex-1 overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="hidden sm:table-header-group">
+                                <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider font-bold">
+                                    <th class="px-6 py-3.5">Account Node</th>
+                                    <th class="px-6 py-3.5">Target Domain</th>
+                                    <th class="px-6 py-3.5">Last 3 Subject Lines & Delivery Times</th>
+                                    <th class="px-6 py-3.5 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-body" class="divide-y divide-slate-200 sm:divide-slate-100 text-xs sm:text-sm">
+                                <!-- Dynamic rows inserted via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Safe Mail Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white border border-slate-200 w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+            <!-- Modal Header -->
+            <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Node Audit: Muskan Sharma</span>
+                    <h3 id="modal-subject" class="text-sm sm:text-base font-bold text-slate-900 mt-1 line-clamp-1">Email Subject Line</h3>
+                </div>
+                <button id="close-modal-btn" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-all text-sm shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <!-- Modal Metadata Header -->
+            <div class="px-4 sm:px-6 py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2.5 sm:gap-4 items-center text-[11px] sm:text-xs text-slate-600 font-medium">
+                <div>
+                    <span class="text-slate-400">Account:</span>
+                    <span id="modal-account" class="font-bold text-slate-800">musk9090 (Muskan Sharma)</span>
+                </div>
+                <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
+                <div>
+                    <span class="text-slate-400">Timestamp:</span>
+                    <span id="modal-time" class="font-mono text-slate-800">Jun 8 @ 14:30:10</span>
+                </div>
+                <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
+                <div>
+                    <span class="text-slate-400">Relative Delivery:</span>
+                    <span id="modal-seconds-ago" class="font-mono text-indigo-600 font-bold">120 seconds ago</span>
+                </div>
+            </div>
+            <!-- Modal Body Sandbox Viewport -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100/50 relative min-h-[280px] sm:min-h-[350px]">
+                <div id="modal-body-fallback" class="hidden text-slate-800 whitespace-pre-wrap leading-relaxed font-mono text-xs bg-white p-4 sm:p-5 rounded-xl border border-slate-200"></div>
+                <iframe id="modal-body-frame" class="w-full h-full min-h-[300px] sm:min-h-[380px] border border-slate-200 rounded-xl bg-white hidden" sandbox="allow-same-origin"></iframe>
             </div>
         </div>
+    </div>
 
-        <!-- PLAYING FIELD: Shin-chan and Shiro playing at the bottom -->
-        <section class="mt-16 relative">
-            <div class="w-full bg-[#1b2149] border-4 border-black rounded-[2rem] p-6 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 comic-shadow-yellow min-h-[140px]">
-                
-                <!-- Beautiful Grass Lawn Background Layer -->
-                <div class="absolute bottom-0 left-0 w-full h-4 bg-emerald-500"></div>
-                <div class="absolute bottom-4 left-0 w-full h-1 bg-emerald-400"></div>
-
-                <!-- Left Content: Chocobi Mascot / Quote Bubble -->
-                <div class="flex items-center gap-4 z-10">
-                    <!-- Dialogue Bubble -->
-                    <div class="bg-white text-black p-4 rounded-2xl relative speech-bubble border-2 border-black max-w-xs shadow-md">
-                        <div class="absolute bottom-[-10px] right-8 w-4 h-4 bg-white border-b-2 border-r-2 border-black transform rotate-45"></div>
-                        <p id="shinchan-quote" class="text-xs font-bold text-[#12152b]">Hehehe, welcome to the inbox deck! Wiggle wiggle~</p>
-                    </div>
-                </div>
-
-                <!-- Right Side: Beautiful SVGs of Shin-chan and Shiro happily bouncing/playing -->
-                <div class="flex items-end gap-6 z-10 pr-4">
-                    <!-- Cute Shiro SVG -->
-                    <div class="relative flex flex-col items-center">
-                        <svg class="animate-[bounce_1s_infinite_150ms] origin-bottom" viewBox="0 0 80 80" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Tail -->
-                            <path d="M15,55 Q5,50 12,42 Q18,48 22,52" fill="#FFFFFF" stroke="#000" stroke-width="2" />
-                            <!-- Feet -->
-                            <ellipse cx="28" cy="68" rx="5" ry="4" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
-                            <ellipse cx="42" cy="68" rx="5" ry="4" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
-                            <ellipse cx="54" cy="68" rx="5" ry="4" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
-                            <ellipse cx="64" cy="68" rx="5" ry="4" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
-                            <!-- Body -->
-                            <path d="M22,55 Q35,45 60,50 L62,65 L25,65 Z" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
-                            <!-- Blue Collar -->
-                            <path d="M52,48 Q55,54 58,48" stroke="#0069B4" stroke-width="4" fill="none" stroke-linecap="round"/>
-                            <!-- Head -->
-                            <circle cx="58" cy="35" r="16" fill="#FFFFFF" stroke="#000" stroke-width="2" />
-                            <!-- Floppy Ears -->
-                            <path d="M42,32 C38,25 36,35 44,38" fill="#FFFFFF" stroke="#000" stroke-width="1.8"/>
-                            <path d="M74,32 C78,25 80,35 72,38" fill="#FFFFFF" stroke="#000" stroke-width="1.8"/>
-                            <!-- Eyes -->
-                            <circle cx="53" cy="32" r="2.5" fill="#000"/>
-                            <circle cx="65" cy="32" r="2.5" fill="#000"/>
-                            <!-- Nose -->
-                            <ellipse cx="59" cy="37" rx="3.5" ry="2" fill="#000"/>
-                            <!-- Mouth -->
-                            <path d="M57,41 Q59,43 61,41" stroke="#000" stroke-width="1.5" fill="none"/>
-                        </svg>
-                        <span class="text-[9px] font-black uppercase text-white tracking-widest mt-1 bg-sky-600/40 px-2 py-0.5 rounded-full border border-sky-400/20">Shiro</span>
-                    </div>
-
-                    <!-- Cute Shin-chan SVG -->
-                    <div class="relative flex flex-col items-center">
-                        <svg class="animate-[bounce_1s_infinite] origin-bottom" viewBox="0 0 100 120" width="80" height="96" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Hair -->
-                            <path d="M20,40 Q40,10 70,30 Q80,20 85,35 Q90,50 82,60 Q70,55 50,60" fill="#000000"/>
-                            <!-- Ears -->
-                            <ellipse cx="16" cy="65" rx="7" ry="9" fill="#FCD0A1" stroke="#000" stroke-width="2"/>
-                            <!-- Ear line -->
-                            <path d="M16,61 C18,65 14,68 17,70" stroke="#000" stroke-width="1.5" fill="none"/>
-                            <!-- Face Profile -->
-                            <path d="M22,45 C35,42 60,35 75,50 C86,58 92,68 84,78 C76,86 65,85 55,83 C45,81 30,81 22,75 C14,69 15,55 22,45 Z" fill="#FCD0A1" stroke="#000" stroke-width="2"/>
-                            <!-- Thick Eyebrows -->
-                            <path d="M38,43 Q48,40 54,46" stroke="#000000" stroke-width="6.5" stroke-linecap="round" fill="none" />
-                            <path d="M64,48 Q72,42 78,50" stroke="#000000" stroke-width="6.5" stroke-linecap="round" fill="none" />
-                            <!-- Big Eyes -->
-                            <ellipse cx="48" cy="58" rx="6" ry="8" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
-                            <ellipse cx="48" cy="58" rx="3" ry="4" fill="#000000"/>
-                            <circle cx="49" cy="56" r="1" fill="#FFFFFF"/>
-
-                            <ellipse cx="70" cy="61" rx="6" ry="8" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
-                            <ellipse cx="70" cy="61" rx="3" ry="4" fill="#000000"/>
-                            <circle cx="71" cy="59" r="1" fill="#FFFFFF"/>
-                            <!-- Blushing Cheek -->
-                            <ellipse cx="80" cy="72" rx="5" ry="3" fill="#FF8DA1"/>
-                            <!-- Mouth -->
-                            <path d="M52,72 Q60,78 62,70" stroke="#000" stroke-width="2" fill="none"/>
-                            <!-- Red Shirt -->
-                            <path d="M25,83 L75,83 L71,110 L29,110 Z" fill="#E52521" stroke="#000" stroke-width="2"/>
-                            <!-- Yellow Pants -->
-                            <path d="M29,110 L71,110 L68,120 L32,120 Z" fill="#FCE300" stroke="#000" stroke-width="2"/>
-                        </svg>
-                        <span class="text-[9px] font-black uppercase text-white tracking-widest mt-1 bg-red-600/40 px-2 py-0.5 rounded-full border border-red-400/20">Shin-chan</span>
-                    </div>
-                </div>
+    <!-- Notification Toast -->
+    <div id="toast-notification" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 transform translate-y-10 opacity-0 transition-all duration-200 pointer-events-none">
+        <div class="bg-slate-900 text-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl shadow-lg flex items-center gap-3 text-xs font-medium border border-slate-700 max-w-xs sm:max-w-md">
+            <i class="fa-solid fa-circle-info text-indigo-400 text-base shrink-0"></i>
+            <div>
+                <p id="toast-title" class="font-bold">Notice</p>
+                <p id="toast-message" class="text-slate-300">Target subject not found in account node.</p>
             </div>
-
-            <!-- Footer Meta Info -->
-            <footer class="mt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 font-bold gap-2 relative">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-cookie text-yellow-400"></i>
-                    <span>Authorized by Kasukabe Defense Force Commander.</span>
-                </div>
-                <div>JSG53 Secure Terminal Systems v3.0.0</div>
-            </footer>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <script>
-       const CONFIG = {
+        const CONFIG = {
             clientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
             clientSecret: "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",
             accounts: [
-                { name: "agkartik8429", token: "1//0g0j86Rcxi3QrCgYIARAAGBASNwF-L9Ir-y6PjI7Qr4d5iBkYbc-Tx_ZBQqBUGvnNS0O35qva682RqRzrEP0oQ93rpofm2PzFS6k" },
-                { name: "liveseedacc", token: "1//0guqANvb_X5K3CgYIARAAGBASNwF-L9IrqODXDbSdAtPz7GznJrXl0HXkUbcKQ9yqWwda563DfGtAbc8MlFkDZuja-SzHMG7WkXk" },
-                { name: "liveseedforall", token: "1//0gub_tDUPkLESCgYIARAAGBASNwF-L9IrVdFJ0uMmaXYM4AG01a6r7Zpo3uDchB7DNXW0Rkt4oDojH3-9HCrZX5tr8uDFmABRRY0" },
-                { name: "agkartik9090", token: "1//0g1w2jQ29C6fkCgYIARAAGBASNwF-L9Ir1mkqwDP8wVSBC5KaKgh12Z2Myzv46aE2vPX0kJkxrOEo7t_NxyhEXSbp7RQBMsF0a9U" },
-                { name: "muskan9090", token: "1//0g023PJ2GWaKiCgYIARAAGBASNwF-L9Ir2KCnrDsb90KBj1YyGKYxOc5bx9EU2BIldR7KTrktIj4w6htW3kPDjSkP-0i2jKZyeYo" },
-                { name: "markanthony", token: "1//0grxNa8fusC2YCgYIARAAGBASNwF-L9IrdqZhvmX93PKx8sHouJqf673pNDWmGLLo9XiKoWlZtMl-L0CFD1BQDyHLZcPG9M6Zen4" },
-                { name: "liveseedmm", token: "1//0gj4AZbhLjWK0CgYIARAAGBASNwF-L9IrKfhgpAfv-20pn5NC72ByHJS-b17sGCNrkV3vTDkiVGV98aGbwn32IKXhx97d0X-KHeg" },
-                { name: "arcsan", token: "1//0gbQkQjqB6dmFCgYIARAAGBASNwF-L9IroUxKSF0oSj2t_9L9l7Bk7inNEepzhDA-DLrpVngouFHoyGl__nEp3OD-2SlbxAofEdM" },
-                { name: "ashwinsiropn", token: "1//0gVEsWZHhysDiCgYIARAAGBASNwF-L9Ir1VA8Wq2OqrP4NB6DBnNAM64bLqlW05jn1p9BXNcgLg6On-w_wa8AS4nVi3P6kaWAYMI" },
+                { name: "ashwinliveseedforall", type: "Opener", token: "1//0gub_tDUPkLESCgYIARAAGBASNwF-L9IrVdFJ0uMmaXYM4AG01a6r7Zpo3uDchB7DNXW0Rkt4oDojH3-9HCrZX5tr8uDFmABRRY0" },
+                { name: "asharyaliveseedacc", type: "Opener", token: "1//0guqANvb_X5K3CgYIARAAGBASNwF-L9IrqODXDbSdAtPz7GznJrXl0HXkUbcKQ9yqWwda563DfGtAbc8MlFkDZuja-SzHMG7WkXk" },
+                { name: "liveseedsformm", type: "Opener", token: "1//0gj4AZbhLjWK0CgYIARAAGBASNwF-L9IrKfhgpAfv-20pn5NC72ByHJS-b17sGCNrkV3vTDkiVGV98aGbwn32IKXhx97d0X-KHeg" },
+                { name: "arcsann6767", type: "Opener", token: "1//0gbQkQjqB6dmFCgYIARAAGBASNwF-L9IroUxKSF0oSj2t_9L9l7Bk7inNEepzhDA-DLrpVngouFHoyGl__nEp3OD-2SlbxAofEdM" },
+                { name: "k97946781", type: "Opener", token: "1//0g2yeODI8PUEQCgYIARAAGBASNwF-L9IrtxealwGHzy6g1O6Q5aDBoufFtunoe1PM5PAmQrCbOskO-cBvVW-hGJNqKQw6VhxpmDQ" },
+                { name: "kartikag8429", type: "Opener", token: "1//0g0j86Rcxi3QrCgYIARAAGBASNwF-L9Ir-y6PjI7Qr4d5iBkYbc-Tx_ZBQqBUGvnNS0O35qva682RqRzrEP0oQ93rpofm2PzFS6k" },
+                { name: "agkartikag90", type: "Opener", token: "1//0g1w2jQ29C6fkCgYIARAAGBASNwF-L9Ir1mkqwDP8wVSBC5KaKgh12Z2Myzv46aE2vPX0kJkxrOEo7t_NxyhEXSbp7RQBMsF0a9U" },
+                { name: "muskansharma90", type: "Opener", token: "1//0g023PJ2GWaKiCgYIARAAGBASNwF-L9Ir2KCnrDsb90KBj1YyGKYxOc5bx9EU2BIldR7KTrktIj4w6htW3kPDjSkP-0i2jKZyeYo" },
+                { name: "ashwinaryaop", type: "Non-Opener", token: "1//0gVEsWZHhysDiCgYIARAAGBASNwF-L9Ir1VA8Wq2OqrP4NB6DBnNAM64bLqlW05jn1p9BXNcgLg6On-w_wa8AS4nVi3P6kaWAYMI" },
+                { name: "ashwinaryanono", type: "Non-Opener", token: "1//0gl06ju2Mpv_UCgYIARAAGBASNwF-L9IrE1u7ohq49G77gxforJWrE25LFW0l9mhJG77uIePV9d76iSKGXi_zDDxMPukjlM-vPxM" },
+                { name: "ashwinnewnononpppp", type: "Non-Opener", token: "1//0g0wWqj5ZAgPrCgYIARAAGBASNwF-L9IrSKEzgXu0cAT_3AiFgZaFIvc4JlG6fs6IMVD30O9yteGd5rd53Slq-uWVFozpENTurPI" },
+                { name: "satyam414424", type: "Non-Opener", token: "1//0gumKB5PJdWMECgYIARAAGBASNwF-L9IrMUECWwvnDe-zMU4Y6-zLFZPQx3LGZNMCE-6sJ2qzwLa6ZBR9T0L3nw8p__rwRYUPiVM" },
                 { name: "dhaniyakashyap95", token: "1//0gTKzTcf5km0eCgYIARAAGBASNwF-L9IriAsBn4C2ZPkQhH-5b557dCkDrdKq7l8ZVozYWhIx3XDERwycsuVMbyuBPALXiLfqZQU" },
-                 { name: "greeninboxmails", token: "1//0goS_AI5NMPyuCgYIARAAGBASNwF-L9Ir3kVURP5x013dQj8k_9sLYxzQwYBtRPSQxq-y3MlcdjSZDwTHJuIkVeunOFsPW7-utkA" },
+                { name: "greeninboxmails", token: "1//0goS_AI5NMPyuCgYIARAAGBASNwF-L9Ir3kVURP5x013dQj8k_9sLYxzQwYBtRPSQxq-y3MlcdjSZDwTHJuIkVeunOFsPW7-utkA" },
             ]
         };
 
         const dom = {
             input: document.getElementById('domain-input'),
-            sync: document.getElementById('sync-btn'),
-            toggleMailbox: document.getElementById('mailbox-toggle-btn'),
-            clear: document.getElementById('clear-btn'),
+            btnCheckInbox: document.getElementById('btn-check-inbox'),
+            btnCheckSpam: document.getElementById('btn-check-spam'),
+            btnClear: document.getElementById('btn-clear'),
             table: document.getElementById('results-table-container'),
             body: document.getElementById('results-body'),
             empty: document.getElementById('empty-state'),
             progress: document.getElementById('scan-progress'),
+            modeBadge: document.getElementById('active-mode-badge'),
+            feedStatus: document.getElementById('feed-status-summary'),
+            
             commonSec: document.getElementById('common-section'),
             commonInput: document.getElementById('common-subject-input'),
             copy: document.getElementById('copy-btn'),
             percent: document.getElementById('match-percent'),
-            feedTitle: document.getElementById('feed-title-label'),
-            tableSubjectHeader: document.getElementById('table-subject-header')
+            matchBar: document.getElementById('match-bar'),
+
+            inboxSummaryContainer: document.getElementById('inbox-subjects-summary-container'),
+            inboxSubjectsList: document.getElementById('inbox-subjects-list'),
+            inboxSubjectsCount: document.getElementById('inbox-subjects-count'),
+
+            previewTrigger: document.getElementById('preview-trigger-container'),
+            previewTriggerTitle: document.getElementById('preview-trigger-title'),
+            previewTriggerDesc: document.getElementById('preview-trigger-desc'),
+            showPreviewBtn: document.getElementById('show-preview-btn'),
+            previewModal: document.getElementById('preview-modal'),
+            closeModalBtn: document.getElementById('close-modal-btn'),
+            modalSubject: document.getElementById('modal-subject'),
+            modalAccount: document.getElementById('modal-account'),
+            modalTime: document.getElementById('modal-time'),
+            modalSecondsAgo: document.getElementById('modal-seconds-ago'),
+            modalBodyFrame: document.getElementById('modal-body-frame'),
+            modalBodyFallback: document.getElementById('modal-body-fallback'),
+
+            toast: document.getElementById('toast-notification'),
+            toastTitle: document.getElementById('toast-title'),
+            toastMessage: document.getElementById('toast-message')
         };
 
-        let lastResults = [];
-        let currentMailboxMode = 'inbox'; // can be 'inbox' or 'spam'
+        let lastScanResults = [];
+        let activeScanMode = 'inbox';
 
-        // Dynamic Chocobi Star Cookie Particle Emitter
-        const cookieColors = ['#FCE300', '#FF8DA1', '#89E894', '#9AD6F2'];
-        function createCookie() {
-            const container = document.getElementById('chocobi-container');
-            if (!container) return;
-            const cookie = document.createElement('div');
-            cookie.className = 'star-cookie';
-            
-            const randomColor = cookieColors[Math.floor(Math.random() * cookieColors.length)];
-            cookie.style.background = randomColor;
-            
-            // Random size, sway path, delay, speed
-            const size = Math.random() * 8 + 8; // 8px to 16px
-            cookie.style.width = `${size}px`;
-            cookie.style.height = `${size}px`;
-            cookie.style.left = `${Math.random() * 100}vw`;
-            
-            const duration = Math.random() * 6 + 6; // 6s to 12s
-            cookie.style.animation = `fall ${duration}s linear infinite, sway ${Math.random() * 4 + 2}s ease-in-out infinite`;
-            cookie.style.delay = `${Math.random() * 4}s`;
-            
-            container.appendChild(cookie);
-
-            // Cleanup
-            setTimeout(() => {
-                cookie.remove();
-            }, (duration + 4) * 1000);
-        }
-
-        // Initialize particles
-        for (let i = 0; i < 15; i++) {
-            setTimeout(createCookie, Math.random() * 3000);
-        }
-        setInterval(createCookie, 600);
-
-        // Shin-chan Dialogue Quotes Carousel
-        const quotes = [
-            "Hehehe, welcome to the inbox deck! Wiggle wiggle~",
-            "Shiro, perform your cotton candy move! Woof!",
-            "I hate green peppers! Let's ignore them!",
-            "Action Kamen, save us! Bzzzt, Action Beam!",
-            "Did you bring any Chocobi Star Cookies today?",
-            "Hehe, Nanako-oneesan is so beautiful...",
-            "Kasukabe Defense Force, assemble! Wake up Shiro!"
-        ];
-        let quoteIndex = 0;
-        setInterval(() => {
-            const quoteEl = document.getElementById('shinchan-quote');
-            if (quoteEl) {
-                quoteIndex = (quoteIndex + 1) % quotes.length;
-                quoteEl.classList.add('opacity-0');
-                setTimeout(() => {
-                    quoteEl.textContent = quotes[quoteIndex];
-                    quoteEl.classList.remove('opacity-0');
-                }, 300);
-            }
-        }, 5000);
+        document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Nodes`;
+        document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
 
         async function getAccess(refreshToken) {
             const res = await fetch('https://oauth2.googleapis.com/token', {
@@ -542,11 +396,45 @@
             return data.access_token;
         }
 
-        async function fetchSubjects(accessToken, domain) {
+        function decodeBase64(data) {
             try {
-                // Dynamically swaps based on current selected mode
-                const targetLabel = currentMailboxMode === 'spam' ? 'in:spam' : 'in:inbox';
-                const q = encodeURIComponent(`${domain} ${targetLabel}`);
+                const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
+                return decodeURIComponent(escape(window.atob(base64)));
+            } catch (e) {
+                try {
+                    return window.atob(data.replace(/-/g, '+').replace(/_/g, '/'));
+                } catch (err) {
+                    return "";
+                }
+            }
+        }
+
+        function extractGmailBody(payload) {
+            if (!payload) return "";
+            if (payload.body && payload.body.data) {
+                return decodeBase64(payload.body.data);
+            }
+            if (payload.parts) {
+                let htmlPart = payload.parts.find(p => p.mimeType === 'text/html');
+                if (htmlPart && htmlPart.body && htmlPart.body.data) {
+                    return decodeBase64(htmlPart.body.data);
+                }
+                let plainPart = payload.parts.find(p => p.mimeType === 'text/plain');
+                if (plainPart && plainPart.body && plainPart.body.data) {
+                    return decodeBase64(plainPart.body.data);
+                }
+                for (let part of payload.parts) {
+                    let recursiveResult = extractGmailBody(part);
+                    if (recursiveResult) return recursiveResult;
+                }
+            }
+            return "";
+        }
+
+        async function fetchSubjects(accessToken, domain, mode) {
+            try {
+                const folderQuery = mode === 'inbox' ? 'in:inbox' : 'in:spam';
+                const q = encodeURIComponent(`${domain} ${folderQuery}`);
                 
                 const listRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=3`, {
                     headers: { Authorization: `Bearer ${accessToken}` }
@@ -555,43 +443,191 @@
 
                 if (!listData.messages || listData.messages.length === 0) return [];
 
+                const now = Date.now();
+
                 return await Promise.all(listData.messages.map(async (m) => {
                     const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}`, {
                         headers: { Authorization: `Bearer ${accessToken}` }
                     });
                     const msgData = await msgRes.json();
+                    
                     const headers = msgData.payload.headers;
                     const subject = headers.find(h => h.name === 'Subject')?.value || "(Empty Subject)";
+                    
                     const dateRaw = headers.find(h => h.name === 'Date')?.value || "";
                     const dateObj = new Date(dateRaw);
-                    const date = isNaN(dateObj) ? "" : dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    const timeValid = !isNaN(dateObj.getTime());
+                    
+                    let secondsAgo = 0;
+                    if (timeValid) {
+                        secondsAgo = Math.max(0, Math.floor((now - dateObj.getTime()) / 1000));
+                    }
 
-                    return { subject, date };
+                    const dateStr = !timeValid ? "N/A" : dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    const timeStr = !timeValid ? "N/A" : dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+
+                    const snippet = msgData.snippet || "";
+                    let parsedBody = "";
+                    try {
+                        parsedBody = extractGmailBody(msgData.payload);
+                    } catch (bodyError) {
+                        parsedBody = snippet;
+                    }
+
+                    const labels = msgData.labelIds || [];
+                    let landing = mode === 'inbox' ? 'INBOX' : 'SPAM';
+                    if (labels.includes('SPAM')) landing = 'SPAM';
+                    else if (labels.includes('INBOX')) landing = 'INBOX';
+
+                    return { 
+                        subject, 
+                        dateStr, 
+                        timeStr, 
+                        secondsAgo, 
+                        landing, 
+                        snippet, 
+                        body: parsedBody || snippet 
+                    };
                 }));
-            } catch (e) { return null; }
+            } catch (e) { 
+                return null; 
+            }
         }
 
-        function calculateCommonality(results) {
-            if (results.length === 0) return;
+        function renderRow(accConfig, domain, subjects, mode) {
+            const row = document.createElement('tr');
+            row.className = "hover:bg-slate-50 transition-colors animate-fade-in flex flex-col sm:table-row border-b sm:border-b-0 border-slate-200 pb-4 sm:pb-0 mb-4 sm:mb-0";
+            
+            const accName = accConfig.name;
+            const isOpener = accConfig.type === "Opener";
+            const isMuskan = (accName === 'muskansharma90' || accName === 'musk9090');
 
-            const accountMaps = results.reduce((acc, curr) => {
-                if (!acc[curr.accName]) acc[curr.accName] = new Set();
-                curr.subjects.forEach(s => acc[curr.accName].add(s.subject));
-                return acc;
-            }, {});
+            const typeBadgeHtml = isOpener 
+                ? `<span class="inline-flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-semibold mt-0.5"><i class="fa-solid fa-envelope-open text-[8px]"></i> Opener</span>`
+                : `<span class="inline-flex items-center gap-1 text-[10px] bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded font-semibold mt-0.5"><i class="fa-solid fa-lock text-[8px]"></i> Non-Opener</span>`;
 
-            const accountNames = Object.keys(accountMaps);
-            const totalAccounts = CONFIG.accounts.length;
+            const accountLabel = isMuskan 
+                ? `<div class="flex flex-col">
+                    <div class="flex items-center gap-2 font-bold text-slate-900">
+                      <span class="w-2 h-2 rounded-full bg-indigo-600"></span>${accName}
+                      <span class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono">TARGET NODE</span>
+                    </div>
+                    <div class="mt-0.5">${typeBadgeHtml}</div>
+                   </div>` 
+                : `<div class="flex flex-col">
+                    <div class="font-semibold text-slate-800">${accName}</div>
+                    <div class="mt-0.5">${typeBadgeHtml}</div>
+                   </div>`;
 
-            if (accountNames.length < totalAccounts) {
-                dom.percent.textContent = "...";
-                dom.commonInput.value = "Finalizing account analysis...";
+            const hasData = subjects && subjects.length > 0;
+            const statusHtml = hasData 
+                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> MATCHED (${subjects.length})
+                   </span>`
+                : subjects === null 
+                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                     AUTH ERROR
+                   </span>`
+                : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                     NO MAIL
+                   </span>`;
+
+            let subjectsHtml = '';
+            if (subjects === null) {
+                subjectsHtml = `<div class="text-rose-600 text-xs font-medium">Authentication token expired for account: ${accName}</div>`;
+            } else if (subjects.length === 0) {
+                subjectsHtml = `<div class="text-slate-400 text-xs italic">No messages found matching mode [${mode.toUpperCase()}] for target domain</div>`;
+            } else {
+                subjectsHtml = subjects.map((s, i) => {
+                    const isInboxMode = s.landing === 'INBOX';
+                    const badgeStyle = isInboxMode 
+                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+                        : 'bg-amber-50 text-amber-800 border-amber-200';
+                    
+                    const folderIcon = isInboxMode ? 'fa-inbox' : 'fa-triangle-exclamation';
+
+                    return `
+                        <div class="mb-2.5 last:mb-0 p-2.5 sm:p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
+                                <div class="font-bold text-slate-900 flex items-start gap-2 min-w-0 flex-1">
+                                    <span class="w-4 h-4 rounded bg-slate-200 text-slate-700 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">${i+1}</span>
+                                    <span class="break-words line-clamp-2 sm:line-clamp-1 flex-1 leading-snug">${escapeHtml(s.subject)}</span>
+                                </div>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${badgeStyle} shrink-0 self-start sm:self-auto">
+                                    <i class="fa-solid ${folderIcon} text-[9px]"></i> ${s.landing}
+                                </span>
+                            </div>
+                            
+                            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-slate-500 font-mono mt-1 pt-1.5 border-t border-slate-200/60">
+                                <div>
+                                    <span class="text-slate-400">Delivered:</span> 
+                                    <strong class="text-indigo-600 font-bold">${s.secondsAgo.toLocaleString()} seconds ago</strong>
+                                </div>
+                                <div class="text-slate-300 hidden sm:block">•</div>
+                                <div class="text-slate-500">${s.dateStr} @ ${s.timeStr}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            row.innerHTML = `
+                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top block sm:table-cell">
+                    <div class="flex items-center justify-between sm:block mb-1 sm:mb-0">
+                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Node</span>
+                        ${accountLabel}
+                    </div>
+                </td>
+                <td class="px-4 sm:px-6 py-1 sm:py-4 align-top block sm:table-cell">
+                    <div class="flex items-center justify-between sm:block mb-2 sm:mb-0">
+                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Domain</span>
+                        <span class="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200 truncate max-w-[200px] inline-block">${escapeHtml(domain)}</span>
+                    </div>
+                </td>
+                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top block sm:table-cell">${subjectsHtml}</td>
+                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top text-left sm:text-right block sm:table-cell">
+                    <div class="flex items-center justify-between sm:justify-end sm:block">
+                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Status</span>
+                        ${statusHtml}
+                    </div>
+                </td>
+            `;
+            dom.body.appendChild(row);
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function calculateCommonality(results, mode) {
+            if (results.length === 0) {
+                dom.percent.textContent = "0%";
+                dom.matchBar.style.width = "0%";
+                dom.commonInput.value = `No ${mode.toUpperCase()} messages retrieved from targets.`;
+                dom.previewTrigger.classList.add('hidden');
+                dom.inboxSummaryContainer.classList.add('hidden');
                 return;
             }
 
-            const allSubjectsAcrossAccounts = [].concat(...Object.values(accountMaps).map(set => Array.from(set)));
+            const totalAccounts = CONFIG.accounts.length;
+
+            // Map unique subject lines per account (All landing folders)
+            const accountMaps = results.reduce((acc, curr) => {
+                if (!acc[curr.accName]) acc[curr.accName] = new Set();
+                curr.subjects.forEach(s => {
+                    acc[curr.accName].add(s.subject);
+                });
+                return acc;
+            }, {});
+
+            const allSubjects = [].concat(...Object.values(accountMaps).map(set => Array.from(set)));
             const frequency = {};
-            allSubjectsAcrossAccounts.forEach(s => frequency[s] = (frequency[s] || 0) + 1);
+            allSubjects.forEach(s => frequency[s] = (frequency[s] || 0) + 1);
 
             let topSubject = "";
             let topCount = 0;
@@ -604,155 +640,232 @@
 
             const matchRate = Math.round((topCount / totalAccounts) * 100);
             dom.percent.textContent = `${matchRate}%`;
+            dom.matchBar.style.width = `${matchRate}%`;
 
-            if (topCount === totalAccounts) {
+            if (topCount > 0) {
                 dom.commonInput.value = topSubject;
-                dom.percent.className = "text-4xl font-black text-emerald-400 italic";
-            } else if (topCount > 1) {
-                dom.commonInput.value = `Partial Match Found: "${topSubject}"`;
-                dom.percent.className = "text-4xl font-black text-yellow-400 italic";
             } else {
-                dom.commonInput.value = "No shared subject lines found across the network.";
-                dom.percent.textContent = "0%";
+                dom.commonInput.value = `No common subjects detected in ${mode.toUpperCase()}.`;
+            }
+
+            // Compute Inbox Specific Subject Lines and Match Percentages
+            const inboxAccountMaps = results.reduce((acc, curr) => {
+                if (!acc[curr.accName]) acc[curr.accName] = new Set();
+                curr.subjects.forEach(s => {
+                    if (s.landing === 'INBOX') {
+                        acc[curr.accName].add(s.subject);
+                    }
+                });
+                return acc;
+            }, {});
+
+            const inboxSubjectsList = [].concat(...Object.values(inboxAccountMaps).map(set => Array.from(set)));
+            const inboxFrequency = {};
+            inboxSubjectsList.forEach(s => inboxFrequency[s] = (inboxFrequency[s] || 0) + 1);
+
+            const sortedInboxSubjects = Object.entries(inboxFrequency)
+                .map(([subject, count]) => ({
+                    subject,
+                    count,
+                    percentage: Math.round((count / totalAccounts) * 100)
+                }))
+                .sort((a, b) => b.count - a.count);
+
+            if (sortedInboxSubjects.length > 0) {
+                dom.inboxSummaryContainer.classList.remove('hidden');
+                dom.inboxSubjectsCount.textContent = `${sortedInboxSubjects.length} Inbox subject${sortedInboxSubjects.length > 1 ? 's' : ''}`;
+                
+                dom.inboxSubjectsList.innerHTML = sortedInboxSubjects.map((item, index) => {
+                    return `
+                        <div class="p-3 flex items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
+                            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-mono font-bold text-[10px] flex items-center justify-center shrink-0">${index + 1}</span>
+                                <span class="font-semibold text-slate-800 text-xs sm:text-sm truncate" title="${escapeHtml(item.subject)}">${escapeHtml(item.subject)}</span>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0 font-mono text-xs">
+                                <span class="text-slate-400 hidden sm:inline text-[11px]">${item.count} / ${totalAccounts} nodes</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs">${item.percentage}%</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                dom.inboxSummaryContainer.classList.add('hidden');
+            }
+
+            const muskanResult = results.find(item => item.accName === "muskansharma90" || item.accName === "musk9090");
+            const hasMuskanMails = muskanResult && muskanResult.subjects && muskanResult.subjects.length > 0;
+
+            if (hasMuskanMails) {
+                dom.previewTrigger.classList.remove('hidden');
+                dom.previewTriggerTitle.textContent = `Mail Detected in Muskan's Account (${mode.toUpperCase()})`;
+                dom.previewTriggerDesc.innerHTML = `Active ${mode.toUpperCase()} payload verified. Click button to inspect HTML structure safely.`;
+            } else {
+                dom.previewTrigger.classList.add('hidden');
             }
         }
 
-        function renderRow(accName, domain, subjects) {
-            const row = document.createElement('tr');
-            row.className = "hover:bg-yellow-400/[0.03] transition-colors group animate-slide";
+        async function runScanSequence(mode) {
+            const domains = dom.input.value.split('\n').map(d => d.trim()).filter(d => d.length > 0);
+            if (domains.length === 0) {
+                showToast("Missing Target Domain", "Please enter at least one target domain to check.");
+                return;
+            }
 
-            const folderUpper = currentMailboxMode.toUpperCase();
-            const hasData = subjects && subjects.length > 0;
-            const statusHtml = hasData
-                ? `<div class="flex items-center gap-1.5 justify-end text-[9px] font-black text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">VERIFIED ${folderUpper}</div>`
-                : subjects === null
-                    ? `<div class="flex items-center gap-1.5 justify-end text-[9px] font-black text-red-400 bg-red-400/10 px-3 py-1.5 rounded-full border border-red-400/20 text-center">AUTH EXPIRED</div>`
-                    : `<div class="flex items-center gap-1.5 justify-end text-[9px] font-black text-slate-500 bg-slate-800 px-3 py-1.5 rounded-full">NO MATCH</div>`;
+            activeScanMode = mode;
+            setScanUIState(true, mode);
 
-            let subjectsHtml = subjects === null
-                ? `<span class="text-red-400/80 text-xs font-bold">Please update token for ${accName}</span>`
-                : subjects.length === 0
-                    ? `<span class="text-slate-600 text-xs italic font-medium">Domain not detected in ${currentMailboxMode}</span>`
-                    : subjects.map((s, i) => `
-                    <div class="flex items-center justify-between gap-3 mb-1.5 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60 text-xs hover:border-yellow-400/30 transition-all">
-                        <div class="flex items-center gap-3 overflow-hidden">
-                            <span class="w-4 h-4 flex-shrink-0 flex items-center justify-center text-[8px] font-black bg-slate-800 text-slate-500 rounded-md">${i + 1}</span>
-                            <span class="text-slate-100 font-bold truncate max-w-[240px]">${s.subject}</span>
-                        </div>
-                        <span class="text-[9px] font-bold text-slate-500 flex-shrink-0 italic">${s.date}</span>
-                    </div>
-                `).join('');
-
-            row.innerHTML = `
-                <td class="px-8 py-5"><span class="text-white font-black text-sm tracking-tight">${accName}</span></td>
-                <td class="px-8 py-5"><span class="text-yellow-400/70 font-mono text-[10px] font-black">${domain}</span></td>
-                <td class="px-8 py-5">${subjectsHtml}</td>
-                <td class="px-8 py-5 text-right">${statusHtml}</td>
-            `;
-            dom.body.appendChild(row);
-        }
-
-        // Core extraction loop trigger logic
-        async function runExtractionPipeline() {
-            const domains = dom.input.value.split('\n').filter(d => d.trim() !== '');
-            if (domains.length === 0) return;
-
-            dom.sync.disabled = true;
-            dom.toggleMailbox.disabled = true;
-            dom.sync.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i><span class="tracking-widest">PROBING DATA...</span>`;
-            
             dom.empty.classList.add('hidden');
             dom.table.classList.remove('hidden');
-            dom.clear.classList.remove('hidden');
             dom.commonSec.classList.remove('hidden');
+            dom.previewTrigger.classList.add('hidden');
+            dom.inboxSummaryContainer.classList.add('hidden');
             dom.body.innerHTML = '';
-            lastResults = [];
+            lastScanResults = [];
 
-            // Dynamic presentation adjustments based on active target directory context
-            if (currentMailboxMode === 'spam') {
-                dom.feedTitle.textContent = "KASUKABE DATA FEED (SPAM)";
-                dom.tableSubjectHeader.textContent = "Spam Subject Lines (Last 3)";
-            } else {
-                dom.feedTitle.textContent = "KASUKABE DATA FEED (INBOX)";
-                dom.tableSubjectHeader.textContent = "Inbox Subject Lines (Last 3)";
-            }
+            const totalScans = domains.length * CONFIG.accounts.length;
+            let completedScans = 0;
 
             for (const domain of domains) {
-                const trimmed = domain.trim();
-
                 await Promise.all(CONFIG.accounts.map(async (acc) => {
                     try {
                         const token = await getAccess(acc.token);
-                        const subjects = await fetchSubjects(token, trimmed);
-                        renderRow(acc.name, trimmed, subjects);
+                        const subjects = await fetchSubjects(token, domain, mode);
+                        
+                        renderRow(acc, domain, subjects, mode);
                         if (subjects && subjects.length > 0) {
-                            lastResults.push({ accName: acc.name, subjects });
+                            lastScanResults.push({ accName: acc.name, subjects });
                         }
                     } catch (e) {
-                        renderRow(acc.name, trimmed, null);
+                        renderRow(acc, domain, null, mode);
+                    } finally {
+                        completedScans++;
+                        dom.feedStatus.textContent = `Scanned ${completedScans} of ${totalScans} node sequences...`;
                     }
                 }));
             }
 
-            calculateCommonality(lastResults);
-            dom.sync.disabled = false;
-            dom.toggleMailbox.disabled = false;
-            dom.sync.innerHTML = `<i class="fa-solid fa-bolt-lightning text-yellow-300"></i><span class="tracking-widest uppercase">SYNC WORKSPACE</span>`;
+            calculateCommonality(lastScanResults, mode);
+            setScanUIState(false, mode);
+            dom.feedStatus.textContent = `Completed scan in [${mode.toUpperCase()}] mode at ${new Date().toLocaleTimeString()}`;
         }
 
-        // Toggle UI Mode between Inbox and Spam queries
-        dom.toggleMailbox.addEventListener('click', () => {
-            if (currentMailboxMode === 'inbox') {
-                currentMailboxMode = 'spam';
-                dom.toggleMailbox.innerHTML = `<i class="fa-solid fa-inbox text-yellow-300"></i><span class="tracking-widest uppercase">SHOW INBOX MAILS</span>`;
-                dom.toggleMailbox.className = dom.toggleMailbox.className.replace('bg-[#0069b4]', 'bg-[#e52521]');
-                dom.toggleMailbox.className = dom.toggleMailbox.className.replace('hover:bg-sky-600', 'hover:bg-red-500');
-            } else {
-                currentMailboxMode = 'inbox';
-                dom.toggleMailbox.innerHTML = `<i class="fa-solid fa-envelope-open text-yellow-300"></i><span class="tracking-widest uppercase">SHOW SPAM MAILS</span>`;
-                dom.toggleMailbox.className = dom.toggleMailbox.className.replace('bg-[#e52521]', 'bg-[#0069b4]');
-                dom.toggleMailbox.className = dom.toggleMailbox.className.replace('hover:bg-red-500', 'hover:bg-sky-600');
-            }
+        function setScanUIState(isScanning, mode) {
+            dom.btnCheckInbox.disabled = isScanning;
+            dom.btnCheckSpam.disabled = isScanning;
             
-            // Re-trigger visual scans if domains have already been set up inside layout
-            const domains = dom.input.value.split('\n').filter(d => d.trim() !== '');
-            if (domains.length > 0) {
-                runExtractionPipeline();
+            if (isScanning) {
+                dom.progress.classList.remove('hidden');
+                dom.modeBadge.className = "self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold flex items-center gap-2 animate-pulse";
+                dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-indigo-600"></span> Scanning [${mode.toUpperCase()}]...`;
+            } else {
+                dom.progress.classList.add('hidden');
+                const badgeColor = mode === 'inbox' ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-800';
+                dom.modeBadge.className = `self-start sm:self-auto px-3.5 py-1.5 rounded-full ${badgeColor} border border-slate-200 text-xs font-bold flex items-center gap-2`;
+                dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full ${mode === 'inbox' ? 'bg-indigo-600' : 'bg-amber-600'}"></span> Active Mode: ${mode.toUpperCase()}`;
             }
-        });
+        }
 
-        dom.sync.addEventListener('click', runExtractionPipeline);
+        dom.btnCheckInbox.addEventListener('click', () => runScanSequence('inbox'));
+        dom.btnCheckSpam.addEventListener('click', () => runScanSequence('spam'));
 
-        dom.copy.addEventListener('click', () => {
-            const val = dom.commonInput.value;
-            if (val && !val.includes('No shared') && !val.includes('Analyzing')) {
-                const el = document.createElement("textarea");
-                el.value = val;
-                document.body.appendChild(el);
-                el.select();
-                document.execCommand("copy");
-                document.body.removeChild(el);
-
-                const originalIcon = dom.copy.innerHTML;
-                dom.copy.innerHTML = `<i class="fa-solid fa-check"></i>`;
-                dom.copy.className = dom.copy.className.replace('bg-[#e52521]', 'bg-emerald-600');
-                setTimeout(() => {
-                    dom.copy.innerHTML = originalIcon;
-                    dom.copy.className = dom.copy.className.replace('bg-emerald-600', 'bg-[#e52521]');
-                }, 2000);
-            }
-        });
-
-        dom.clear.addEventListener('click', () => {
+        dom.btnClear.addEventListener('click', () => {
+            dom.input.value = '';
             dom.body.innerHTML = '';
             dom.table.classList.add('hidden');
             dom.empty.classList.remove('hidden');
-            dom.clear.classList.add('hidden');
             dom.commonSec.classList.add('hidden');
-            dom.input.value = '';
-            lastResults = [];
+            dom.previewTrigger.classList.add('hidden');
+            dom.inboxSummaryContainer.classList.add('hidden');
+            dom.feedStatus.textContent = "Awaiting scan initiation";
+            dom.modeBadge.className = "self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2";
+            dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Idle / Ready`;
+            lastScanResults = [];
         });
+
+        dom.copy.addEventListener('click', () => {
+            const val = dom.commonInput.value;
+            if (val && !val.includes('No common') && !val.includes('Scanning')) {
+                navigator.clipboard.writeText(val).then(() => {
+                    const origIcon = dom.copy.innerHTML;
+                    dom.copy.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i>`;
+                    setTimeout(() => { dom.copy.innerHTML = origIcon; }, 1800);
+                }).catch(() => {
+                    const el = document.createElement("textarea");
+                    el.value = val;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(el);
+                });
+            }
+        });
+
+        dom.showPreviewBtn.addEventListener('click', () => {
+            const muskanResult = lastScanResults.find(item => item.accName === 'muskansharma90' || item.accName === 'musk9090');
+            if (!muskanResult || !muskanResult.subjects || muskanResult.subjects.length === 0) {
+                showToast("Preview Unavailable", "No subject data retrieved for node.");
+                return;
+            }
+
+            const activeSubject = dom.commonInput.value;
+            let targetMail = muskanResult.subjects.find(s => s.subject === activeSubject);
+            if (!targetMail) targetMail = muskanResult.subjects[0];
+
+            if (targetMail) {
+                dom.modalSubject.textContent = targetMail.subject;
+                dom.modalAccount.textContent = `${muskanResult.accName} (Muskan Sharma)`;
+                dom.modalTime.textContent = `${targetMail.dateStr} @ ${targetMail.timeStr}`;
+                dom.modalSecondsAgo.textContent = `${targetMail.secondsAgo.toLocaleString()} seconds ago`;
+
+                if (targetMail.body && targetMail.body.includes('<')) {
+                    dom.modalBodyFallback.classList.add('hidden');
+                    dom.modalBodyFrame.classList.remove('hidden');
+
+                    const safeCSS = `
+                        <style>
+                            a, a *, [href], button, input {
+                                pointer-events: none !important;
+                                cursor: default !important;
+                                text-decoration: none !important;
+                            }
+                        </style>
+                    `;
+                    dom.modalBodyFrame.srcdoc = safeCSS + targetMail.body;
+                } else {
+                    dom.modalBodyFrame.classList.add('hidden');
+                    dom.modalBodyFallback.classList.remove('hidden');
+                    dom.modalBodyFallback.textContent = targetMail.body || targetMail.snippet || "No body content parsed.";
+                }
+
+                dom.previewModal.classList.remove('hidden');
+                setTimeout(() => {
+                    dom.previewModal.classList.remove('opacity-0');
+                }, 20);
+            }
+        });
+
+        const hidePreviewModal = () => {
+            dom.previewModal.classList.add('opacity-0');
+            setTimeout(() => {
+                dom.previewModal.classList.add('hidden');
+                dom.modalBodyFrame.srcdoc = "";
+            }, 200);
+        };
+
+        dom.closeModalBtn.addEventListener('click', hidePreviewModal);
+        dom.previewModal.addEventListener('click', (e) => {
+            if (e.target === dom.previewModal) hidePreviewModal();
+        });
+
+        function showToast(title, message) {
+            dom.toastTitle.textContent = title;
+            dom.toastMessage.textContent = message;
+            dom.toast.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                dom.toast.classList.add('translate-y-10', 'opacity-0');
+            }, 4000);
+        }
     </script>
 </body>
-
 </html>
