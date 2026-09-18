@@ -205,7 +205,7 @@
                                 <i class="fa-solid fa-eye text-sm"></i>
                             </div>
                             <div>
-                                <h4 id="preview-trigger-title" class="text-sm font-bold text-slate-800">Email Found in Muskan Sharma Account</h4>
+                                <h4 id="preview-trigger-title" class="text-sm font-bold text-slate-800">Email Found in Target Account</h4>
                                 <p id="preview-trigger-desc" class="text-xs text-slate-500">View safe sandboxed preview pulled from node <strong class="text-slate-700 font-semibold">musk9090</strong>.</p>
                             </div>
                         </div>
@@ -269,7 +269,7 @@
             <!-- Modal Header -->
             <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Node Audit: Muskan Sharma</span>
+                    <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Node Audit</span>
                     <h3 id="modal-subject" class="text-sm sm:text-base font-bold text-slate-900 mt-1 line-clamp-1">Email Subject Line</h3>
                 </div>
                 <button id="close-modal-btn" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-all text-sm shrink-0">
@@ -280,7 +280,7 @@
             <div class="px-4 sm:px-6 py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2.5 sm:gap-4 items-center text-[11px] sm:text-xs text-slate-600 font-medium">
                 <div>
                     <span class="text-slate-400">Account:</span>
-                    <span id="modal-account" class="font-bold text-slate-800">musk9090 (Muskan Sharma)</span>
+                    <span id="modal-account" class="font-bold text-slate-800">musk9090</span>
                 </div>
                 <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
                 <div>
@@ -314,9 +314,12 @@
 
     <script>
         const CONFIG = {
-            clientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
-            clientSecret: "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",
-            accounts: [
+            // Default credentials used across accounts
+            defaultClientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
+            defaultClientSecret: "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",
+            
+            // Accounts array: specify custom clientId/clientSecret per account if needed
+           accounts: [
                 { name: "ashwinliveseedforall", type: "Opener", token: "1//0gub_tDUPkLESCgYIARAAGBASNwF-L9IrVdFJ0uMmaXYM4AG01a6r7Zpo3uDchB7DNXW0Rkt4oDojH3-9HCrZX5tr8uDFmABRRY0" },
                 { name: "asharyaliveseedacc", type: "Opener", token: "1//0guqANvb_X5K3CgYIARAAGBASNwF-L9IrqODXDbSdAtPz7GznJrXl0HXkUbcKQ9yqWwda563DfGtAbc8MlFkDZuja-SzHMG7WkXk" },
                 { name: "liveseedsformm", type: "Opener", token: "1//0gj4AZbhLjWK0CgYIARAAGBASNwF-L9IrKfhgpAfv-20pn5NC72ByHJS-b17sGCNrkV3vTDkiVGV98aGbwn32IKXhx97d0X-KHeg" },
@@ -326,11 +329,32 @@
                 { name: "agkartikag90", type: "Opener", token: "1//0g1w2jQ29C6fkCgYIARAAGBASNwF-L9Ir1mkqwDP8wVSBC5KaKgh12Z2Myzv46aE2vPX0kJkxrOEo7t_NxyhEXSbp7RQBMsF0a9U" },
                 { name: "muskansharma90", type: "Opener", token: "1//0gPq37jtx0_0KCgYIARAAGBASNwF-L9IreaaDx20paQujuIoTUk67NYt2pD9caOBJvffab3il9PtvL4GEYKYOFdffiWpxLTh6oeU" },
                 { name: "ashwinaryaop", type: "Non-Opener", token: "1//0gVEsWZHhysDiCgYIARAAGBASNwF-L9Ir1VA8Wq2OqrP4NB6DBnNAM64bLqlW05jn1p9BXNcgLg6On-w_wa8AS4nVi3P6kaWAYMI" },
-                { name: "ashwinaryanono", type: "Non-Opener", token: "1//0gl06ju2Mpv_UCgYIARAAGBASNwF-L9IrE1u7ohq49G77gxforJWrE25LFW0l9mhJG77uIePV9d76iSKGXi_zDDxMPukjlM-vPxM" },
-                
+              
                 { name: "satyam414424", type: "Non-Opener", token: "1//0gumKB5PJdWMECgYIARAAGBASNwF-L9IrMUECWwvnDe-zMU4Y6-zLFZPQx3LGZNMCE-6sJ2qzwLa6ZBR9T0L3nw8p__rwRYUPiVM" },
-                { name: "dhaniyakashyap95", token: "1//0gTKzTcf5km0eCgYIARAAGBASNwF-L9IriAsBn4C2ZPkQhH-5b557dCkDrdKq7l8ZVozYWhIx3XDERwycsuVMbyuBPALXiLfqZQU" },
-                { name: "greeninboxmails", token: "1//0goS_AI5NMPyuCgYIARAAGBASNwF-L9Ir3kVURP5x013dQj8k_9sLYxzQwYBtRPSQxq-y3MlcdjSZDwTHJuIkVeunOFsPW7-utkA" },
+                { name: "agarwalkartik311", token: "1//0gMBZg-3tRBLsCgYIARAAGBASNwF-L9IrZrkLNFyCwPO1uVFbfDkWuZRHJVEkFeW_LH8RoWB8bgDNcj9Jck-_itXNKL_MYqn51K0" },
+             { name: "ashwin.mavericksmedia", token: "1//0ghFlwp963PsqCgYIARAAGBASNwF-L9IrfCKuOqQg8xqQz3BAvXnxnA5wVuHEvUB89gbDgcLr3eo7p13S61n3lPsvj47lWN5Hm7E" },
+                  { 
+                    name: "ashwinaryanono", 
+                    type: "Non-Opener", 
+                    token: "1//0g6qv3E3pprRyCgYIARAAGBASNwF-L9Ir2_X7lmQnuoPgkTHwSKCYGk3Lvy-rKCUXmBhOQL2uG6B-YojzqSmFiCVyJp0vNBfoq6c",
+                    clientId: "707901165841-938emg3s0i65g4j1nebqqf33kr65rblp.apps.googleusercontent.com",
+                    clientSecret: "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"
+                }
+              { 
+                    name: "pj5548991", 
+                    type: "Non-Opener", 
+                    token: "1//0gCTNyixzXPKLCgYIARAAGBASNwF-L9Iradt9B6Eb0h0eCpd3emXADAjo9PhJOmc6S4Pl2mCSr45VSJEBmkdMVpYVlfsG_9t8mes",
+                    clientId: "707901165841-938emg3s0i65g4j1nebqqf33kr65rblp.apps.googleusercontent.com",
+                    clientSecret: "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"
+                }
+      { 
+                    name: "ajha44649", 
+                    type: "Non-Opener", 
+                    token: "1//0gLpD0gfAmyjaCgYIARAAGBASNwF-L9Irmc_EgOuOyRKsWA3H2bxTYYTnSyNv4nJPWKD1Bvr4z9_W9gT23cYXm24VoNN654xmad8",
+                    clientId: "707901165841-938emg3s0i65g4j1nebqqf33kr65rblp.apps.googleusercontent.com",
+                    clientSecret: "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"
+                }
+                
             ]
         };
 
@@ -380,14 +404,17 @@
         document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Nodes`;
         document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
 
-        async function getAccess(refreshToken) {
+        async function getAccess(acc) {
+            const clientId = acc.clientId || CONFIG.defaultClientId;
+            const clientSecret = acc.clientSecret || CONFIG.defaultClientSecret;
+
             const res = await fetch('https://oauth2.googleapis.com/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
-                    client_id: CONFIG.clientId,
-                    client_secret: CONFIG.clientSecret,
-                    refresh_token: refreshToken,
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    refresh_token: acc.token,
                     grant_type: 'refresh_token',
                 }),
             });
@@ -616,7 +643,6 @@
 
             const totalAccounts = CONFIG.accounts.length;
 
-            // Map unique subject lines per account (All landing folders)
             const accountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
                 curr.subjects.forEach(s => {
@@ -648,7 +674,6 @@
                 dom.commonInput.value = `No common subjects detected in ${mode.toUpperCase()}.`;
             }
 
-            // Compute Inbox Specific Subject Lines and Match Percentages
             const inboxAccountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
                 curr.subjects.forEach(s => {
@@ -729,7 +754,7 @@
             for (const domain of domains) {
                 await Promise.all(CONFIG.accounts.map(async (acc) => {
                     try {
-                        const token = await getAccess(acc.token);
+                        const token = await getAccess(acc);
                         const subjects = await fetchSubjects(token, domain, mode);
                         
                         renderRow(acc, domain, subjects, mode);
